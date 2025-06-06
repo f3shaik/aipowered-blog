@@ -1,3 +1,4 @@
 # Ignore every .env file
 .env
 venv/
+generated_posts/

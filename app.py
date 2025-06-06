@@ -32,6 +32,7 @@ def generate_endpoint():
         content = generate_post(keyword, metrics, api_key=API_KEY)
     except Exception as e:
         return jsonify({"error" : f"OpenAI API error: {str(e)}"}), 400
+    save_to_file(keyword, content)
     response = {
         "keyword": keyword,
         "metrics": metrics,
@@ -49,14 +50,18 @@ def daily_job():
         print(f"[{datetime.datetime.now()}] ERROR generating post: {e}")
         return 
     # Generate a file now saying that we successfuly ran a job
+    save_to_file(set_keyword, content)
+
+def save_to_file(keyword: str, content: str):
     day_str = datetime.datetime.now().strftime("%m%d%Y")
-    filename = f"{set_keyword.replace(' ','_')}_{day_str}.md"
+    filename = f"{keyword.replace(' ','_')}_{day_str}.md"
     out_dir = "generated_posts"
     os.makedirs(out_dir, exist_ok=True)
     dir_path = os.path.join(out_dir, filename)
     with open(dir_path, "w", encoding="utf-8") as file: # with automatically closes the file
         file.write(content)
     print(f"Saved daily post on [{datetime.datetime.now()}] to {dir_path}")
+
 
 def scheduler():
     # Calling helper function to handle job run everyday
